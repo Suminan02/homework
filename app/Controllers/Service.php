@@ -51,7 +51,6 @@ class Service extends BaseController{
             if (preg_match($pattern_email , $email)==FALSE) {
                 $response = array('ret'=>'206','msg'=>'Invalid pattern email');
                 echo json_encode($response);
-
                 exit;
             }
             
@@ -81,38 +80,36 @@ class Service extends BaseController{
         OR citizen_id='{$cid}'LIMIT 3;";
         $array_result=$this->Mydev_model->select($sql_username_chk );
         if(count($array_result)>0){
-
         for($i=0;$i<count($array_result);$i++){
             $responseuser='';
-            if(strpos($array_result[$i]->username,$username ) === 0){
-                $responseuser = 'user';
+            if(strpos(strtoupper($array_result[$i]->username),strtoupper($username) ) === 0){
+                $responseuser = 'user,';
             }
             $responsecid='';
-            if(strpos($array_result[$i]->citizen_id,$cid ) === 0){
-                $responsecid = 'cid';
+            if(strpos($array_result[$i]->citizen_id,$cid) === 0){
+                $responsecid = 'cid,';
                
             }
             $responseemail='';
-            if(strpos($array_result[$i]->email,$email ) === 0){
+            if(strpos(strtoupper($array_result[$i]->email),strtoupper($email) ) === 0){
                 $responseemail = 'email';
-
+                
             }
             
             $response = array('ret_code'=>'5000',
             'msg'=>"unsuccess information same with other user",
-            'duplicate'=>"'$responseuser'"."'$responsecid'"."'$responseemail'");
+            'duplicate'=>"{$responseuser} {$responsecid} {$responseemail}");
             echo json_encode($response);
-
+            exit;
         }
-        exit;
+        
     }
-
         $sql="INSERT INTO user_info (username, citizen_id, email) 	
         VALUES ('{$username}', '{$cid}', '{$email}');";
 
         $execute=$this->Mydev_model->execute($sql);
         if($execute){
-            $response = array('ret_code'=>'101','msg'=>"success","data"=>"");
+            $response = array('ret_code'=>'101','msg'=>"success");
             echo json_encode($response);
           }
           
